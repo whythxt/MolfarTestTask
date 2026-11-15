@@ -4,8 +4,7 @@ import CoreData
 nonisolated class Item: NSManagedObject {
     @NSManaged var id: UUID
     @NSManaged var title: String
-    @NSManaged var value: Int64
-    @NSManaged var createdAt: Date
+    @NSManaged var price: Double
     @NSManaged var category: Category?
 }
 
