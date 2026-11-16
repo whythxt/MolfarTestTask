@@ -1,16 +1,69 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var viewModel = ContentViewModel()
+    @State private var viewModel: ContentViewModel
+
+    init(viewModel: ContentViewModel = ContentViewModel()) {
+        _viewModel = State(initialValue: viewModel)
+    }
 
     var body: some View {
-        VStack {
-            Text("MolfarTestTask")
+        NavigationStack {
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(viewModel.itemIDs, id: \.self) { id in
+                        ItemRow(item: viewModel.item(for: id))
+                    }
+                }
+            }
+            .overlay {
+                if viewModel.isLoading {
+                    ProgressView()
+                } else if viewModel.itemIDs.isEmpty {
+                    ContentUnavailableView(
+                        "No Items",
+                        systemImage: "tray",
+                        description: Text("Tap Generate to create random objects.")
+                    )
+                }
+            }
+            .navigationTitle("Items")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Clear", role: .destructive) {
+                        Task { await viewModel.clear() }
+                    }
+                    .disabled(viewModel.isLoading || viewModel.itemIDs.isEmpty)
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Generate") {
+                        Task { await viewModel.generate() }
+                    }
+                    .disabled(viewModel.isLoading)
+                }
+            }
+            .alert("Error", isPresented: errorBinding) {
+                Button("OK") { }
+            } message: {
+                Text(viewModel.errorMessage ?? "")
+            }
         }
-        .padding()
+        .task { await viewModel.load() }
+    }
+
+    private var errorBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.errorMessage = nil } }
+        )
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView(
+        viewModel: ContentViewModel(
+            persistence: PersistenceController(inMemory: true)
+        )
+    )
 }
