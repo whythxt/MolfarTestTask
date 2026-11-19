@@ -1,3 +1,4 @@
+import CoreData
 import SwiftUI
 
 struct ContentView: View {
@@ -12,7 +13,12 @@ struct ContentView: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(viewModel.itemIDs, id: \.self) { id in
-                        ItemRow(item: viewModel.item(for: id))
+                        let item = viewModel.item(for: id)
+
+                        NavigationLink(value: item?.category?.objectID) {
+                            ItemRow(item: item)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -26,6 +32,9 @@ struct ContentView: View {
                         description: Text("Tap Generate to create random objects.")
                     )
                 }
+            }
+            .navigationDestination(for: NSManagedObjectID.self) { categoryID in
+                CategoryView(category: viewModel.category(for: categoryID))
             }
             .navigationTitle("Items")
             .toolbar {

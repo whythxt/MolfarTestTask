@@ -21,14 +21,14 @@ nonisolated final class ObjectsService {
                 while remaining > 0 {
                     let category = Category(context: context)
                     category.id = UUID()
-                    category.title = Self.randomTitle()
+                    category.title = Self.randomTitle(from: Self.categoryWords)
 
                     let itemsInCategory = min(Int.random(in: 1...3), remaining)
 
                     for _ in 0..<itemsInCategory {
                         let item = Item(context: context)
                         item.id = UUID()
-                        item.title = Self.randomTitle()
+                        item.title = Self.randomTitle(from: Self.itemWords)
                         item.price = Self.randomPrice()
                         item.category = category
                     }
@@ -67,13 +67,18 @@ nonisolated final class ObjectsService {
 
     // MARK: - Helpers
 
-    private static let words = [
+    private static let categoryWords = [
+        "Kitchen", "Bedroom", "Bathroom", "Office", "Garage", "Hallway", "Nursery", "Balcony",
+        "Attic", "Basement", "Pantry", "Library", "Terrace", "Studio", "Cellar", "Porch"
+    ]
+
+    private static let itemWords = [
         "Sofa", "Armchair", "Table", "Chair", "Bed", "Wardrobe", "Bookshelf", "Desk",
         "Dresser", "Nightstand", "Lamp", "Mirror", "Carpet", "Bench", "Plug"
     ]
 
-    private static func randomTitle() -> String {
-        words.randomElement() ?? "Item"
+    private static func randomTitle(from words: [String]) -> String {
+        words.randomElement() ?? "Untitled"
     }
 
     private static func randomPrice() -> Double {

@@ -39,6 +39,10 @@ final class ContentViewModel {
         try? persistence.viewContext.existingObject(with: id) as? Item
     }
 
+    func category(for id: NSManagedObjectID) -> Category? {
+        try? persistence.viewContext.existingObject(with: id) as? Category
+    }
+
     // MARK: - Helpers
 
     private func run(_ work: () async throws -> Void) async {

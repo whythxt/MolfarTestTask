@@ -26,6 +26,6 @@ struct ItemRow: View {
         }
         .padding(.horizontal)
         .frame(height: 55)
-        .overlay(alignment: .bottom) { Divider().padding(.leading) }
+        .contentShape(.rect)
     }
 }
